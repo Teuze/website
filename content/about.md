@@ -1,10 +1,4 @@
-+++
-title = "About"
-date = "2019-04-14"
-aliases = ["about-me","contact"]
-[ author ]
-  name = "Richard Jarry"
-+++
+# About
 
 <img src="../profile.png" alt="This is me." class="center"> 
 
