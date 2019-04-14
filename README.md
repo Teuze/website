@@ -5,8 +5,9 @@
 ```bash
 # 1. Fetching the necessary repositories
 # website: static content (articles, pics)
-# hello-friend-ng: badass theme by rhazdon
 # teuze.github.io: Hugo output (html shit)
+# hello-friend-ng: badass theme by rhazdon
+
 git clone https://github.com/teuze/website
 cd website
 git clone https://github.com/rhazdon/hugo-theme-hello-friend-ng themes/hello-friend-ng
