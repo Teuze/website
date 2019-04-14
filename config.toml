@@ -15,7 +15,7 @@ theme = "hello-friend-ng"
 
   # Directory name of your blog content (default is `content/posts`)
   contentTypeName = "posts"
-  defaultTheme = "light"
+  defaultTheme = "dark"
 
   [[params.social]]
     name = "twitter"
