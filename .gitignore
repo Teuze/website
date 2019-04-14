@@ -1,0 +1,13 @@
+# Ignore generated resources
+content/resources/
+
+# Ignore Hugo build structure
+archetypes/
+assets/
+config/
+data/
+layout/
+
+# Ignore potential git subtrees
+themes/
+public/
