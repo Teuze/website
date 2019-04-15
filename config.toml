@@ -77,7 +77,7 @@ theme = "hello-friend-ng"
       [[languages.fr.menu.main]]
         identifier = "À propos"
         name = "À propos"
-        url="/apropos"
+        url="../apropos"
 
       [[languages.fr.menu.main]]
         identifier = "blog"
