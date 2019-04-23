@@ -3,28 +3,37 @@
 ## What is Docker ?
 
 Docker is a software overlay allowing its users to develop apps in environments
-called *containers*. It leverages kernel-side virtualisation technologies in 
-order to make guests systems run as if they were their own.
+called *containers*. It leverages [kernel-side virtualisation technologies][5]
+in order to make guests systems run as if they were their own.
 
-Docker differs from lower-level virtualisation engines like VMWare or VirtualBox
-because Docker containers all share the same kernel, while VBoxes for example
-use each a complete different stack, from the emulated BIOS upwards.
+Docker differs from lower-level virtualisation engines like [VMWare][2] 
+or [VirtualBox][3] because Docker containers all share the same kernel,
+while VBoxes for example use each a completely separate stack, from the
+emulated BIOS upwards.
 
 This allows Docker containers to : 
 
  - Run extremely fast, because they're native and not emulated
- - Take less HDD space (vanilla debian weighs around 100MB)
+ - Take less HDD space ([vanilla debian weighs around 50MB][4])
  - Be easy to build : see Dockerfile examples below.
 
 Of course, it also has a few drawbacks :
 
  - Containers are system specific (no Windows containers on Linux...)
- - Security can be a concern, there is actually a lot going on there.
+ - Security can be a concern, [there is actually a lot going on there][6].
 
-Docker is also the name of the very successful company who is developping
+[Docker][1] is also the name of the very successful company who is developping
 the aforementionned solution, as well as a few other services and products
 like `docker-compose` and the Docker Hub which will be presented in more
 detail on the next sections.
+
+[1]: https://www.docker.com
+[2]: https://www.vmware.com
+[3]: https://www.virtualbox.org
+
+[4]: https://hub.docker.com/_/debian?tab=tags
+[5]: https://en.wikipedia.org/wiki/Docker_(software)#Technology
+[6]: https://to.be.disclosed/no-reference-yet
 
 ## Installing Docker on your system
 
@@ -48,9 +57,11 @@ sudo echo "deb [arch=amd64] "$URL >> /etc/apt/sources.list
 sudo apt update
 sudo apt install docker-ce
 ```
-For other systems, please have a look at the Docker download page.
+For other systems, please have a look at the Docker [online docs][doc].
 Once you've got Docker on your system, you can check its version by typing
 the usual `docker -v`.
+
+[doc]: https://docs.docker.com
 
 **Security warning** : While adding your standard user to the Docker group
 can be tempting to avoid constant sudoing when using `docker`, it is bad
@@ -93,7 +104,7 @@ Once you've decided which image to get, you can download it like this :
 # Repo and tag can be omitted if unambiguous
 sudo docker pull alpine
 ```
-Docker will then get the correponding image layers and install the image.
+Docker will then get the corresponding image layers and install the image.
 You can find it under `/var/lib/docker` but it may require a little search.
 More on Docker objects and internals on the corresponding section.
 
@@ -164,9 +175,13 @@ For each Dockerfile directive, a new image layer is created. For this reason,
 `RUN` commands tend to be very compact, with each instruction linked to the 
 previous with a double ampersand `&&`.
 
-I recommend keeping an eye on the Dockerfile reference, on the best practice
-webpage and on the official Docker tutorial anyway while experimenting 
-with Docker builds.
+I recommend keeping an eye on the [Dockerfile reference][dref],
+on the [best practice webpage][bprc] and on the official 
+[Docker tutorial][tuto] anyway while experimenting with Docker builds.
+
+[dref]: https://docs.docker.com/engine/rference/builder
+[bprc]: https://docs.docker.com/develop/develop-images/dockerfile_best-practices
+[tuto]: https://docs.docker.com/get-started
 
 Once you have your Dockerfile ready, you can just run something like :
 
@@ -205,8 +220,10 @@ The second way implies creating a configuration file called `docker-compose.yml`
 and using the `docker-compose` tool. On Windows and Mac, this tool ships with
 Docker by default, but on Linux you may need to install it separately (see here).
 
-Here is an example. </br>
-Here is docker-compose reference.
+Here is an example.
+Here is docker-compose [reference][dcrefer].
+
+[dcrefer]: https://docs.docker.com/compose/compose-file
 
 As you can see, docker-compose keywords are almost identical to the previous
 arguments. It's just another way to provide the same information.
@@ -227,17 +244,31 @@ Let's call it "okay practice" instead and define it in simple terms :
 
  - Design and build a security model for your system as soon as possible,
 	and audit regularly. This means code audit, pentesting, and architecture
-	review. A. Shostack has published an excellent guide about
+	review. A. Shostack has published an [excellent guide][tmodel] about
 	threat modelling I advise anyone to read, and you might also find
 	interesting info about the subject there.
 
  - Don't blindly trust your base image. Check the build and the runtime
 	environment, and restrict every unecessary right and cap you can.
-	You can use inspection tools such as Lynis, Anchore and OpenVAS,
-	and enforcement tools such as AppArmor/SELinux/Tomoyo and AIDE.
+	You can use inspection tools such as [Lynis][S1], [Anchore][S2] and
+	[OpenVAS][S3], and enforcement tools such as [AppArmor][S4],
+	[SELinux][S5]/[Tomoyo][S6] and [AIDE][S7].
 
- - Check for vulnerabilities in your software stack by reading CVE news,
-	and patch/update anytime there's a critical security bug.
+ - Check for vulnerabilities in your software stack by reading [CVE][S8] news
+	and patch/update anytime there's a critical security bug. Be sure to
+	also check compliance using for example [CIS Benchmarks][S9].
+
+[tmodel]: https://threatmodelingbook.com/
+
+[S1]: https://linux-audit.com/lynis/
+[S2]: https://github.com/anchore/anchore-engine
+[S3]: http://openvas.org/
+[S4]: https://wiki.ubuntu.com/AppArmor
+[S5]: https://www.nsa.gov/what-we-do/research/selinux/
+[S6]: http://tomoyo.osdn.jp/
+[S7]: https://aide.github.io/
+[S8]: https://cve.mitre.org/
+[S9]: https://github.com/cismirror/benchmarks
 
 ## Conclusion
 
