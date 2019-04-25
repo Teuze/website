@@ -1,6 +1,11 @@
-# About
++++
+date = "2019-04-18"
+description = "A not-so-brief description of self."
+language = "en-us"
+title = "About"
++++
 
-<img src="../profile.png" alt="This is me." class="center"> 
+<img src="../profile.png" alt="This is me." class="center"></img> 
 
 Hi ! I'm Richard.
 

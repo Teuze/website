@@ -19,24 +19,24 @@ theme = "hello-friend-ng"
 
   [[params.social]]
     name = "twitter"
-    url  = "https://twitter.com/"
+    url  = "https://twitter.com/RichardJarry1"
 
   [[params.social]]
     name = "email"
-    url  = "mailto:nobody@example.com"
+    url  = "mailto:richard.jarry@etu.esisar.grenoble-inp.fr"
 
   [[params.social]]
     name = "github"
-    url  = "https://github.com/"
+    url  = "https://github.com/teuze"
 
   [[params.social]]
     name = "linkedin"
-    url = "https://www.linkedin.com/"
+    url = "https://www.linkedin.com/in/richard-jarry-01"
 
 [languages]
   [languages.en]
     title = "Richard Jarry"
-    homeSubtitle =  "Security Engineer"
+    homeSubtitle = "Sorcerer's Apprentice"
     keywords = ""
     copyright = "Richard Jarry-Randerson"
     readOtherPosts = "Read other posts"
@@ -61,7 +61,7 @@ theme = "hello-friend-ng"
 
   [languages.fr]
     title = "Richard Jarry"
-    homeSubtitle = "Ingénieur Sécurité"
+    homeSubtitle = "Apprenti Sorcier"
     keywords = ""
     copyright = "Richard Jarry-Randerson"
     readOtherPosts = "Lire d'autres articles"
@@ -75,7 +75,7 @@ theme = "hello-friend-ng"
 
     [languages.fr.menu]
       [[languages.fr.menu.main]]
-        identifier = "À propos"
+        identifier = "about"
         name = "À propos"
         url="../apropos"
 

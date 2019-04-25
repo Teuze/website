@@ -1,4 +1,13 @@
-# Introduction to Docker
++++
+date = "2019-04-25"
+description = "Trying to sum up a basic usage of Docker"
+language = "en-us"
+title = "A Docker Primer"
+slug = "A Docker Primer" 
+type = "post"
++++
+
+ <img src="https://www.docker.com/sites/default/files/social/docker_facebook_share.png" alt="Docker logo" class="center"></img> 
 
 ## What is Docker ?
 
@@ -20,7 +29,7 @@ This allows Docker containers to :
 Of course, it also has a few drawbacks :
 
  - Containers are system specific (no Windows containers on Linux...)
- - Security can be a concern, [there is actually a lot going on there][6].
+ - Security can be a concern, *there is actually a lot going on there*.
 
 [Docker][1] is also the name of the very successful company who is developping
 the aforementionned solution, as well as a few other services and products
@@ -52,7 +61,7 @@ wget https://download.docker.com/linux/debian/gpg -O docker.pub
 # Verify integrity using SHA256sum and key fingerprint
 sudo apt-key add docker.pub
 
-URL="https://download.docker.com/linux/debian/stretch stable"
+URL="https://download.docker.com/linux/debian stretch stable"
 sudo echo "deb [arch=amd64] "$URL >> /etc/apt/sources.list
 sudo apt update
 sudo apt install docker-ce
@@ -86,9 +95,20 @@ sudo docker search ubuntu
 These commands should each output a list of images vaguely looking like this.
 
 ```
-Put docker output here
+
+root@laptop:~# docker search alpine --limit 8
+NAME                                   DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED
+alpine                                 A minimal Docker image based on Alpine Linux…   5201                [OK]                
+mhart/alpine-node                      Minimal Node.js built on Alpine Linux           428                                     
+anapsix/alpine-java                    Oracle Java 8 (and 7) with GLIBC 2.28 over A…   406                                     [OK]
+alpine/git                             A  simple git container running in alpine li…   79                                      [OK]
+kiasaki/alpine-postgres                PostgreSQL docker image based on Alpine Linux   43                                      [OK]
+easypi/alpine-arm                      AlpineLinux for RaspberryPi                     32                                      
+jfloff/alpine-python                   A small, more complete, Python Docker image …   24                                      [OK]
+hermsi/alpine-sshd                     Dockerize your OpenSSH-server upon a lightwe…   18                                      [OK]
+
 ```
-Each list item corresponds to a Docker image. The list also show the image tags,
+Each list item corresponds to a Docker image. The list also shows the image tags,
 popularity, and official status to help you make yourself an idea of how much
 trust you can put in what you're about to download.
 
@@ -106,7 +126,7 @@ sudo docker pull alpine
 ```
 Docker will then get the corresponding image layers and install the image.
 You can find it under `/var/lib/docker` but it may require a little search.
-More on Docker objects and internals on the corresponding section.
+More on Docker objects and internals on a next article, maybe.
 
 Now you have your image, how about interacting with it ? </br>
 Quick terminology tip : a running Docker image is a container.
@@ -156,19 +176,13 @@ Here is an example of a simple Dockerfile for network traffic analysis.
 ```
 FROM alpine:latest
 
-RUN	apk add tcpdump bro suricata && \
-	useradd # Make this non-interactive
-	
-USER	analyser
-WORKDIR	/home/analyser
+RUN	apk add tcpdump ngrep tshark && \
+	adduser --disabled-password --gecos "" analyser
 
-# CMD or ENTRYPOINT
-```
+USER analyzer
+WORKDIR /home/analyzer
 
-```bash
-#!/bin/sh
-# Autostart suricata
-suricata -i eth0
+CMD ["/bin/sh"]
 ```
 
 For each Dockerfile directive, a new image layer is created. For this reason,
@@ -203,30 +217,88 @@ In that case, the `-it` option should be discarded.
 push it on the Docker Hub or save it to a gzipped archive file.
 
 ```bash
-sudo docker push user/image	# Requires a Hub account
+sudo docker push user/image	# Requires a Hub account (?)
 sudo docker save imagename 	# Missing args to gzip result
 ```
-Okay, so now we have a cool custom image, but ideally we would like to customize
-its environment so that it can run network analysis directly on a dedicated host 
-interface. How do we do that ?
+Okay, so now we have a cool custom image, but as you probably noticed,
+you can't actually use the installed binaries yet, because you enter
+the container as `analyzer` who has no admin rights.
+Even if you delete line 4 in the Dockerfile, you still won't be able
+to monitor what's going on over your host interface.
+
+How can we setup the container environment in order to make it work ?
 
 ### Setting up the image environment
 
 There are actually two ways of setting up a Docker environment : arguments and
 `docker-compose`. We briefly saw the first one with `--network` and `--mount`
-options, but there are a lot more. They are listed here.
+options, but there are a lot more. They are listed [here][dc-options].
 
 The second way implies creating a configuration file called `docker-compose.yml`
 and using the `docker-compose` tool. On Windows and Mac, this tool ships with
-Docker by default, but on Linux you may need to install it separately (see here).
+Docker by default, but on Linux you may need to install it separately. <br/>
+In this case you might want to install it as a container from [there][dc-source].
 
-Here is an example.
-Here is docker-compose [reference][dcrefer].
+Here is a docker-compose [example][dc-example]. </br>
+Here is the docker-compose [reference][dc-refer].
 
-[dcrefer]: https://docs.docker.com/compose/compose-file
+[dc-options]: https://docs.docker.com/engine/reference/commandline/run/
+[dc-example]: https://gist.github.com/blackstorm/d446814539daace544d0c9c61e842d18
+[dc-source]: https://github.com/docker/compose/releases/download/1.24.0/run.sh
+[dc-refer]: https://docs.docker.com/compose/compose-file
 
 As you can see, docker-compose keywords are almost identical to the previous
 arguments. It's just another way to provide the same information.
+However, with compose files you can actually automate the building process
+and orchestrate the interaction of several Docker containers, which is a big plus.
+
+Below are the files we may use for our project, although we should check
+beforehand for security policy compliance. Should this container really be able
+to monitor our host interfaces ?
+
+`Dockerfile`
+```
+FROM alpine:latest
+
+RUN     apk add tcpdump ngrep tshark libcap && \
+        adduser --disabled-password --gecos "" analyzer && \
+        setcap CAP_NET_BIND_SERVICE+ep /usr/bin/ngrep && \
+        setcap CAP_NET_ADMIN+ep /usr/bin/ngrep && \
+        setcap CAP_NET_RAW+ep /usr/bin/ngrep
+
+USER    analyzer
+WORKDIR /home/analyzer
+
+CMD     ["/bin/sh"]
+```
+
+`docker-compose.yml`
+
+```yaml
+version: '2.3'
+services:
+  main:
+    build: .
+    image: test
+    network_mode: host
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+      - NET_BIND_SERVICE
+    volumes:
+      - exchange:/data
+
+volumes:
+        exchange:
+
+```
+`commandline`
+
+```bash
+sudo docker-compose build
+sudo docker-compose up		  # For non-interactive containers
+sudo docker-compose run main	  # For interactive containers like ours
+```
 
 ## Wrapping up : Docker development workflow
 
@@ -236,7 +308,9 @@ arguments. It's just another way to provide the same information.
  - Share it using the Hub or gzipped archives
  - Run it with arguments or using `docker-compose`
 
-Or using a nice picture : there (asciinema)
+And as a live example :
+
+<script id="asciicast-rHxl5SmiQH82aoH0lTb6nMiSJ" src="https://asciinema.org/a/rHxl5SmiQH82aoH0lTb6nMiSJ.js" async></script>
 
 ## Docker security good practice
 
@@ -252,7 +326,7 @@ Let's call it "okay practice" instead and define it in simple terms :
 	environment, and restrict every unecessary right and cap you can.
 	You can use inspection tools such as [Lynis][S1], [Anchore][S2] and
 	[OpenVAS][S3], and enforcement tools such as [AppArmor][S4],
-	[SELinux][S5]/[Tomoyo][S6] and [AIDE][S7].
+	[SELinux][S5], [Tomoyo][S6] and [AIDE][S7].
 
  - Check for vulnerabilities in your software stack by reading [CVE][S8] news
 	and patch/update anytime there's a critical security bug. Be sure to
@@ -273,14 +347,13 @@ Let's call it "okay practice" instead and define it in simple terms :
 ## Conclusion
 
 Docker is one of several kernel-level virtualisation software
-available today (other solutions include LXC and Hyper-V).
+available today (other solutions include BSD jails and Solaris zones).
 Its cross-platform availability and simplicity of use greatly contributed
 to the huge popularity it currently has. With such a tool, it becomes
 easy to build and seal your software stack by shipping each block as an
 independent container on a monitored, system-internal network.
 
-With such a power comes however the reponsibilty of clearly defining your
+With such a power comes however the responsibilty of clearly defining your
 trust zones and securing your accesses, as Docker runs with near-to-root
 rights and prerogatives.
 
-<!-- IMAGE of SpiderMan or StanLee there -->

@@ -1,6 +1,11 @@
-# À Propos
++++
+date = "2019-04-20"
+description = "Description presque exhaustive de parcours."
+language = "fr"
+title = "À Propos"
++++
 
-<img src="../profile.png" alt="This is me." class="center">
+<img src="../profile.png" alt="This is me." class="center"></img>
 
 Salut, c'est Richard ! </br>
 Bienvenue sur mon blog.
