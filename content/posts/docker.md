@@ -3,8 +3,7 @@ date = "2019-04-25"
 description = "Trying to sum up a basic usage of Docker"
 language = "en-us"
 title = "A Docker Primer"
-slug = "A Docker Primer" 
-type = "post"
+slug = "docker" 
 +++
 
  <img src="https://www.docker.com/sites/default/files/social/docker_facebook_share.png" alt="Docker logo" class="center"></img> 
