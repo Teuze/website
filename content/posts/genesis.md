@@ -8,17 +8,31 @@ slug = "genesis"
 
 ## Introduction
 
-### Software and hardware prerequisites
+Operating systems for personal computers have drastically evolved over the past few decades.
+They became modular, thread-aware, architecture-agnostic, capable of handling graphics and virtual environments as well as networking, and much more !
 
-### Specifications and deliverables
+They also branched and forked into thousands of flavors, creating a plethora of compatibility problems. One of these problems is the system installation process.
 
-### System genesis overview
+While relying on different installation tools, all systems follow the same logical steps :
+
+ - **Bootstrapping** : Using a system to install another one
+ - **Provisionning** : Customizing your freshly installed OS
+ - **Staging** : Checking your system's behavior and compliance
+ - **Shipping** : Copy your sytem in the target machine(s)
+
+In this article we'll try to get a high-level solution for this install problem.
+The desired solution should be **system-agnostic**, **automatic**, **modular** and **scalable**.
+In other words, any distro with the adequate configuration file should be able to install on any
+compatible hardware target(s) simultaneously, indempotently and without any human intervention.<br/>
+
+An Infrastructure Architect's dream !
 
 ## 1. Bootstrapping
 
 Bootstrapping is the first stage of a system install.<br/>
 Traditionally done using a bootable medium, it consists of the following steps.
 
+ - Product registration (if applicable)
  - Language, keyboard and locale setup
  - Date, time and timezone setup
  - Network interfaces setup
@@ -27,6 +41,8 @@ Traditionally done using a bootable medium, it consists of the following steps.
 
 Bootstrapping can usually be automated using preseeding files,
 but the preseeding file format depends on the target environment.
+The preseeding file path needs to be explicitly given to the bootstrapping program,
+or must correspond to the default one.
 
 ### 1.1 Windows environments
 
@@ -101,7 +117,8 @@ You might have some testing to do !
 [Here][5] is a preseed example from Ubuntu. <br/>
 Almost identical, aren't they ?
 
-You can find on the [official Debian install guide][6] a note on preseeding.
+Preseed files need to be explicitly given to the bootloader (`grub` or `isolinux` mostly).
+You can find on the [official Debian install guide][6] a chapter on preseeding.
 <!-- I also have a [GitHub repository][7] about unattended Ubuntu Server 18.04LTS ISO creation,
 check it out ! -->
 
@@ -116,8 +133,57 @@ Preseeding on Fedora and derivatives (RHEL, CentOS et al.) is done using **kicks
 Kickstart profiles follow a rather basic structure with commands for each bootstrapping step
 (`network`, `lang`, `keyboard`, `timezone`, `part` and so on).
 
-### 1.4 FreeBSD, NetBSD, and OpenBSD
-### 1.5 Other operating systems
+```shell
+# OEL7 kickstart baseline installation file
+# Simplified, stripped-out version from Bendler's Gist
+# Author:       Thomas Bendler <project@bendler-net.de>
+# Date:         Fri Feb  5 12:12:46 CET 2016
+
+# Generic installation options
+cdrom
+text
+firstboot --disable
+logging --level=info
+reboot --eject
+
+# Security settings
+auth --enableshadow --passalgo=sha512
+firewall --enabled --service=ssh
+selinux --permissive
+
+# Network settings
+network  --bootproto=dhcp --device=enp0s3 --ipv6=auto --activate
+network  --hostname=localhost.localdomain
+
+# Disc settings
+zerombr
+clearpart --all --initlabel
+bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=sda
+autopart --type=lvm
+ignoredisk --only-use=sda
+
+# User settings (password: hamburg1)
+rootpw --iscrypted $6$WYx8jpVu/jAyvXEl$n2aYNqFCFvMWebHVjS.MrDbheQ7AE4zOpfZnWpXq0tnT43MSnMIDzANW8MqltNHfbRaebLlMPodfdObwTbh5g/
+user --groups=wheel --homedir=/home/sysdeploy --name=sysdeploy --password=$6$CmofRJck/r0rcYck$De8OqS.OqrFS3BDpnmQsE88aj93KZZtcTdlniXpeGr4HRPUMr9Vl8zBml3JxrabBJiY4a1LGcEv6PSo5bfIwI1 --iscrypted --gecos="System Deploy"
+
+# Package group and packages that will be installed
+%packages
+@core
+%end
+
+# Final sync
+echo "Sync and finalize kickstart installation"
+sync
+exit 0
+%end
+```
+
+**Note** : Ubuntu 18.04LTS and up seem to partially support kickstart files, which is good news considering how easier it is to preseed that way ! 
+
+### 1.4 Other operating systems
+
+I should further investigate the preseeding possibilities for ArchLinux and BSD systems, it's a longer-term goal. As I understand, Arch has built-in support for shell-scripted bootstrapping, but I definitely need to dig a little deeper.
+
 
 ## 2. Provisionning
 
