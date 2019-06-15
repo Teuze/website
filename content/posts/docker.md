@@ -307,9 +307,9 @@ sudo docker-compose run main	  # For interactive containers like ours
  - Share it using the Hub or gzipped archives
  - Run it with arguments or using `docker-compose`
 
-And as a live example :
+And a summary video :
 
-<script id="asciicast-rHxl5SmiQH82aoH0lTb6nMiSJ" src="https://asciinema.org/a/rHxl5SmiQH82aoH0lTb6nMiSJ.js" async></script>
+<iframe width="420" height="285" src="https://www.youtube.com/embed/YFl2mCHdv24"></iframe>
 
 ## Docker security good practice
 
