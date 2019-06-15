@@ -212,7 +212,7 @@ This is why orchestration tools are popular : they describe system configuration
 
 ```shell
 #!/bin/bash
-# Simple provionning script for a featherlight graphical desktop
+# Simple provionning script for a featherweight graphical desktop
 # Needs to be launched with administrative priviledges
 # Author : Richard Jarry
 # Licensed under WTFPL
@@ -240,7 +240,7 @@ stow tmux
 stow vim
 ```
 By the way if you want to build your own desktop environment on Linux or Mac,
-I highly recommend the [unixporn channel on reddit](https://reddit.com/r/unixporn/).
+I highly recommend the [unixporn channel on reddit](https://reddit.com/r/unixporn/) (it's SFW).
 Oh, and I use [GNU Stow](https://www.gnu.org/software/stow/) in this script in order
 to track symbolic links and keep my `$HOME` tidy (**#MariKondo**).
 
