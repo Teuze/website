@@ -1,5 +1,6 @@
 # Ignore generated resources
 content/resources/
+*.swp
 
 # Ignore Hugo build structure
 archetypes/
